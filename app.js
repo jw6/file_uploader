@@ -16,7 +16,9 @@ const storage = multer.diskStorage({
 
 // Init upload
 const upload = multer({
-  storage: storage
+  storage: storage,
+  // Limit the upload file size by byte
+  limits: {fileSize: 10}
 }).single('myImage');
 // EJS
 app.set('view engine', 'ejs');
