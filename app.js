@@ -18,8 +18,19 @@ const storage = multer.diskStorage({
 const upload = multer({
   storage: storage,
   // Limit the upload file size by byte
-  limits: {fileSize: 10}
+  limits: {fileSize: 1000000},
+  fileFilter: function(req, file, cb) {
+     checkFileType(file, cb); 
+  }
 }).single('myImage');
+
+// Check File Type
+function checkFiletype(file, cb){
+  // Allowed ext
+  const filetypes = /jepg|jpg|png|gif/;
+  // Check ext
+  const extname = filetypes.test(path.extname(file.originalname));
+}
 // EJS
 app.set('view engine', 'ejs');
 
