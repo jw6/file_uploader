@@ -29,7 +29,16 @@ function checkFiletype(file, cb){
   // Allowed ext
   const filetypes = /jepg|jpg|png|gif/;
   // Check ext
-  const extname = filetypes.test(path.extname(file.originalname));
+  const extname = filetypes.test(path.extname(file.originalname).toLowerCase());
+  // Check mime
+  const mimetype = filetypes.test(file.mimetype);
+
+  if(mimetype && extname) {
+    return cb(null, true);
+  } else {
+    console.log(req.file);
+    res.send('test');
+  }
 }
 // EJS
 app.set('view engine', 'ejs');
