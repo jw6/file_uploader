@@ -1,49 +1,48 @@
 const express = require('express');
-const ejs     = require('ejs');
-const multer  = require('multer');
-const path    = require('path');
+const multer = require('multer');
+const ejs = require('ejs');
+const path = require('path');
 
-// Init app
-const app = express();
-
-// Set Storage Engine
+// Set The Storage Engine
 const storage = multer.diskStorage({
-  destination: './public/uploads',
-  filename: function(req, file, cb) {
-    cb(null, file.fieldname + '-' + Date.now() + path.extname(file.originalname));
-  } 
+  destination: './public/uploads/',
+  filename: function(req, file, cb){
+    cb(null,file.fieldname + '-' + Date.now() + path.extname(file.originalname));
+  }
 });
 
-// Init upload
+// Init Upload
 const upload = multer({
   storage: storage,
-  // Limit the upload file size by byte
-  limits: {fileSize: 1000000},
-  fileFilter: function(req, file, cb) {
-     checkFileType(file, cb); 
+  limits:{fileSize: 1000000},
+  fileFilter: function(req, file, cb){
+    checkFileType(file, cb);
   }
 }).single('myImage');
 
 // Check File Type
-function checkFiletype(file, cb){
+function checkFileType(file, cb){
   // Allowed ext
-  const filetypes = /jepg|jpg|png|gif/;
+  const filetypes = /jpeg|jpg|png|gif/;
   // Check ext
   const extname = filetypes.test(path.extname(file.originalname).toLowerCase());
   // Check mime
   const mimetype = filetypes.test(file.mimetype);
 
-  if(mimetype && extname) {
-    return cb(null, true);
+  if(mimetype && extname){
+    return cb(null,true);
   } else {
-    console.log(req.file);
-    res.send('test');
+    cb('Error: Images Only!');
   }
 }
+
+// Init app
+const app = express();
+
 // EJS
 app.set('view engine', 'ejs');
 
-// Public folder
+// Public Folder
 app.use(express.static('./public'));
 
 app.get('/', (req, res) => res.render('index'));
@@ -55,11 +54,20 @@ app.post('/upload', (req, res) => {
         msg: err
       });
     } else {
-      console.log(req.file);
-      res.send('test');
+      if(req.file == undefined){
+        res.render('index', {
+          msg: 'Error: No File Selected!'
+        });
+      } else {
+        res.render('index', {
+          msg: 'File Uploaded!',
+          file: `uploads/${req.file.filename}`
+        });
+      }
     }
   });
 });
+
 const port = 3000;
 
-app.listen(port, () => console.log(`Server is running on port ${port}`));
+app.listen(port, () => console.log(`Server started on port ${port}`));
